@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
+#include "InputActionValue.h"
 #include "ABCharacterPlayer.generated.h"
+
+// 전방선언
+class UInputAction;
 
 /**
  * 
@@ -20,6 +24,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+	// 이동 함수
+	void Move(const FInputActionValue& Value);
+	
+	// 회전 함수
+	void Look(const FInputActionValue& Value);
+	
 protected:
 	// 컴포넌트 구성
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -27,5 +40,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<class UCameraComponent> Camera;
+	
+	// 입력 관련
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> LookAction;
 };

@@ -30,9 +30,6 @@ AABGameMode::AABGameMode()
 	//	TEXT("/Script/ArenaBattle.ABPlayerController")
 	//);
 
-	//static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerRef(
-	//	TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonPlayerController.BP_ThirdPersonPlayerController_C")
-	//);
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerRef(
 		TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonPlayerController.BP_ThirdPersonPlayerController_C")
 	);
