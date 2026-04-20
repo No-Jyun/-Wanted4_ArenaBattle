@@ -36,7 +36,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 
 	// 메시 애셋 지정 (검색 필요함).
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMesh(
-		TEXT("/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple.SKM_Quinn_Simple")
+		TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Warrior.SK_CharM_Warrior")
 	);
 
 	// 로드 성공했으면 설정.
@@ -47,7 +47,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 
 	// 애님 블루프린트 클래스 정보 지정.
 	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnim(
-		TEXT("/Game/Characters/Mannequins/Anims/Unarmed/ABP_Unarmed.ABP_Unarmed_C")
+		TEXT("")
 	);
 
 	if (CharacterAnim.Succeeded())
