@@ -20,18 +20,29 @@ class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
 	
 public:
 	AABCharacterPlayer();
-	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
+	
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// 설정된 컨트롤에 따라 입력 매핑 컨텍스트 및 관련 설정 처리
+	void SetCharacterControl(ECharacterControlType NewCharacterControlType);
+	
+	// 컨트롤 데이터 설정
+	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData) override;
+	
 protected:
+	// 캐릭터 컨트롤 변경 입력 처리 함수
+	void ChangeCharacterControl();
+	
 	// 이동 함수
-	void Move(const FInputActionValue& Value);
+	void ShoulderMove(const FInputActionValue& Value);
+	
+	void QuaterMove(const FInputActionValue& Value);
 	
 	// 회전 함수
-	void Look(const FInputActionValue& Value);
+	void ShoulderLook(const FInputActionValue& Value);
 	
 protected:
 	// 컴포넌트 구성
@@ -43,15 +54,25 @@ protected:
 	
 	// 입력 관련
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+	// UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	// TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
-	TObjectPtr<UInputAction> MoveAction;
+	TObjectPtr<UInputAction> ShoulderMoveAction;
 
 	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
 	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputAction> ShoulderLookAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> QuaterMoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> ChangeControlAction;
+	
+	// 현재 사용중인 캐릭터 컨트롤 타입
+	UPROPERTY(VisibleAnywhere, Category = "CharacterControl")
+	ECharacterControlType CurrentCharacterControlType;
 };
