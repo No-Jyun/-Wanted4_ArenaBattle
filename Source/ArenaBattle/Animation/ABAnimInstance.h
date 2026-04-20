@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,49 +15,49 @@ class ARENABATTLE_API UABAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
-	// »ı¼ºÀÚ.
+	// ìƒì„±ì.
 	UABAnimInstance();
 
 protected:
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç ÃÊ±âÈ­µÉ ¶§ È£ÃâµÇ´Â ÇÔ¼ö.
+	// ì• ë‹ˆë©”ì´ì…˜ ì´ˆê¸°í™”ë  ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜.
 	virtual void NativeInitializeAnimation() override;
 
-	// ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¾÷µ¥ÀÌÆ®ÇÒ ¶§¸¶´Ù(Æ½ ¸¶´Ù) ½ÇÇàµÇ´Â ÇÔ¼ö.
+	// ì• ë‹ˆë©”ì´ì…˜ì„ ì—…ë°ì´íŠ¸í•  ë•Œë§ˆë‹¤(í‹± ë§ˆë‹¤) ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜.
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
-	// ¿À³Ê¸¦ ÀúÀåÇØµÎ°í ÀçÈ°¿ë.
+	// ì˜¤ë„ˆë¥¼ ì €ì¥í•´ë‘ê³  ì¬í™œìš©.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	TObjectPtr<class ACharacter> Owner;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	TObjectPtr<class UCharacterMovementComponent> Movement;
 
-	// Idle - Move ÀüÈ¯À» À§ÇØ »ç¿ëÇÒ ¼Óµµ.
+	// Idle - Move ì „í™˜ì„ ìœ„í•´ ì‚¬ìš©í•  ì†ë„.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	FVector Velocity;
 
-	// ÀÌµ¿ ºü¸£±â (ºí·»µå ½ºÆäÀÌ½º¿¡ Àû¿ë).
+	// ì´ë™ ë¹ ë¥´ê¸° (ë¸”ë Œë“œ ìŠ¤í˜ì´ìŠ¤ì— ì ìš©).
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float GroundSpeed;
 
-	// ÀÌµ¿ÇÏ´ÂÁö ¸ØÃçÀÖ´ÂÁö È®ÀÎÇÏ´Â º¯¼ö.
+	// ì´ë™í•˜ëŠ”ì§€ ë©ˆì¶°ìˆëŠ”ì§€ í™•ì¸í•˜ëŠ” ë³€ìˆ˜.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
 
-	// ÀÌµ¿ ¿©ºÎ¸¦ ÆÇ´ÜÇÒ ¶§ »ç¿ëÇÒ ¹®ÅÎ °ª.
+	// ì´ë™ ì—¬ë¶€ë¥¼ íŒë‹¨í•  ë•Œ ì‚¬ìš©í•  ë¬¸í„± ê°’.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float MovingThreshold;
 
-	// Á¡ÇÁ È®ÀÎ¿ë º¯¼ö.
+	// ì í”„ í™•ì¸ìš© ë³€ìˆ˜.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	uint8 bIsFalling : 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	uint8 bIsJumping : 1;
 
-	// Á¡ÇÁ ¿©ºÎ¸¦ ÆÇ´ÜÇÒ ¶§ »ç¿ëÇÒ ¹®ÅÎ °ª.
+	// ì í”„ ì—¬ë¶€ë¥¼ íŒë‹¨í•  ë•Œ ì‚¬ìš©í•  ë¬¸í„± ê°’.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float JumpingThreshold;
 };
