@@ -2,6 +2,7 @@
 
 #include "Character/ABCharacterBase.h"
 #include "ABCharacterControlData.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -36,5 +37,17 @@ AABCharacterBase::AABCharacterBase()
 void AABCharacterBase::SetCharacterContolData(
 	const UABCharacterControlData* InCharacterControlData)
 {
+	// Pawn.
+	bUseControllerRotationYaw 
+		= InCharacterControlData->bUseControllerRotationYaw;
 
+	// CharacterMovement.
+	GetCharacterMovement()->bUseControllerDesiredRotation
+		= InCharacterControlData->bUseControllerDesiredRotation;
+
+	GetCharacterMovement()->bOrientRotationToMovement 
+		= InCharacterControlData->bOrientRotationToMovement;
+
+	GetCharacterMovement()->RotationRate 
+		= InCharacterControlData->RotationRate;
 }

@@ -11,7 +11,7 @@ UENUM()
 enum class ECharacterControlType : uint8
 {
 	Shoulder,
-	Quater
+	Quarter
 };
 
 UCLASS()
