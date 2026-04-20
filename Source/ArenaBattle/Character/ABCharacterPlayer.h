@@ -46,15 +46,21 @@ protected:
 	// 입력 관련.
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+	//UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	//TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
-	TObjectPtr<UInputAction> MoveAction;
+	TObjectPtr<UInputAction> ShoulderMoveAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputAction> ShoulderLookAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> QuaterMoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> ChangeControlAction;
 };
