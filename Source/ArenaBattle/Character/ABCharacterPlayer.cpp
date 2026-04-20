@@ -7,7 +7,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "InputMappingContext.h"
 #include "InputAction.h"
 
 #include "EnhancedInputSubsystems.h"
@@ -47,7 +46,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 
 	// 애님 블루프린트 클래스 정보 지정
 	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnim(
-		TEXT("")
+		TEXT("/Game/ArenaBattle/Animation/ABP_ABCharacter.ABP_ABCharacter_C")
 	);
 
 	if (CharacterAnim.Succeeded())

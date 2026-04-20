@@ -36,7 +36,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	FVector Velocity;
 
-	// 이동 빠르기 (블렌듯 스페이스에 적용)
+	// 이동 빠르기 (블렌드 스페이스에 적용)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	float GroundSpeed;
 	
