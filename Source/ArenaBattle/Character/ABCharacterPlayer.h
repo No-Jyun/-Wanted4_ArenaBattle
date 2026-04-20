@@ -20,11 +20,11 @@ class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
 	
 public:
 	AABCharacterPlayer();
+	
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	// 이동 함수

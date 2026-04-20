@@ -178,5 +178,17 @@ void AABCharacterPlayer::Move(const FInputActionValue& Value)
 
 void AABCharacterPlayer::Look(const FInputActionValue& Value)
 {
+	// 입력 값 가져오기
+	FVector2d RotationValue = Value.Get<FVector2D>();
+	
+	// 회전 처리 (카메라 회전)
+	// 컨트롤러를 회전 시키면 스프링 암 컴포넌트가 회전함
+	AddControllerYawInput(RotationValue.X);
+	AddControllerPitchInput(-RotationValue.Y);	
+	
+	
+	
+	
+	
 	
 }
