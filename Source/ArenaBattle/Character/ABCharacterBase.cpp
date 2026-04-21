@@ -51,3 +51,10 @@ void AABCharacterBase::SetCharacterContolData(
 	GetCharacterMovement()->RotationRate 
 		= InCharacterControlData->RotationRate;
 }
+
+void AABCharacterBase::ComboActionEnd(
+	UAnimMontage* TargetMontage, bool bInterrupted)
+{
+	// 몽타주 재생이 종료되면 캐릭터 이동을 다시 원상 복구.
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+}

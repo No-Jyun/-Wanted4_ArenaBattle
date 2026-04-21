@@ -47,7 +47,11 @@ protected:
 	// 회전 함수.
 	void ShoulderLook(const FInputActionValue& Value);
 
+	// 쿼터뷰일 때 이동 처리 함수.
 	void QuarterMove(const FInputActionValue& Value);
+
+	// 공격 함수.
+	void Attack();
 
 protected:
 	// 컴포넌트 구성.
@@ -77,6 +81,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	TObjectPtr<UInputAction> ChangeControlAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> AttackAction;
 
 	// 현재 사용 중이 캐릭터 컨트롤 타입.
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl)

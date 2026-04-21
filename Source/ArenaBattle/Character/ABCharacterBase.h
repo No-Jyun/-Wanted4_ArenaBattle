@@ -30,8 +30,16 @@ protected:
 		const class UABCharacterControlData* InCharacterControlData
 	);
 
+	// 몽타주 재생 종료 시 호출할 함수 (델리게이트와 연동).
+	void ComboActionEnd(UAnimMontage* TargetMontage, bool bInterrupted);
+
 protected:
 	// 컨트롤 타입 별 데이터 관리를 위한 맵.
 	UPROPERTY(EditAnywhere, Category = CharacterControl)
 	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlManager;
+
+protected:
+	// 콤보 공격 몽타주.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
+	TObjectPtr<class UAnimMontage> ComboAttackMontage;
 };
