@@ -339,25 +339,5 @@ void AABCharacterPlayer::QuarterMove(const FInputActionValue& Value)
 
 void AABCharacterPlayer::Attack()
 {
-	// 몽타주 재생.
-	// 애님 인스턴스 가져오기.
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
-	{
-		// 몽타주 재생 속도.
-		const float AttackSpeedRate = 1.0f;
-
-		// 몽타주 재생.
-		AnimInstance->Montage_Play(ComboAttackMontage, AttackSpeedRate);
-
-		// 몽타주 종료 이벤트에 등록할 델리게이트 설정.
-		FOnMontageEnded OnMontageEnded;
-		OnMontageEnded.BindUObject(this, &AABCharacterPlayer::ComboActionEnd);
-
-		// 몽타주 재생 종료 시 발행되는 이벤트에 등록.
-		AnimInstance->Montage_SetEndDelegate(OnMontageEnded, ComboAttackMontage);
-
-		// 몽타주 재생 시 이동 안하도록 설정.
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	}
+	
 }
