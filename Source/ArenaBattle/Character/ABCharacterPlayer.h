@@ -44,6 +44,8 @@ protected:
 	// 회전 함수
 	void ShoulderLook(const FInputActionValue& Value);
 	
+	void Attack();
+	
 protected:
 	// 컴포넌트 구성
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -71,6 +73,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
 	TObjectPtr<UInputAction> ChangeControlAction;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Input", BlueprintReadOnly)
+	TObjectPtr<UInputAction> AttackAction;
 	
 	// 현재 사용중인 캐릭터 컨트롤 타입
 	UPROPERTY(VisibleAnywhere, Category = "CharacterControl")

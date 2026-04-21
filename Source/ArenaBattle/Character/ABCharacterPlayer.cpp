@@ -112,6 +112,15 @@ AABCharacterPlayer::AABCharacterPlayer()
 		ChangeControlAction = ChangeControlActionRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(
+		TEXT("/Game/ArenaBattle/Input/Actions/IA_Attack.IA_Attack")
+	);
+
+	if (AttackActionRef.Succeeded())
+	{
+		AttackAction = AttackActionRef.Object;
+	}
+
 	// 사용할 입력 매핑 컨텍스트 지정
 	//GetController()->
 	// Get Controller는 여기서 사용하면 안됨 (세팅 아직 안됨)
@@ -159,6 +168,10 @@ void AABCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 
 		EnhancedInputComponent->BindAction(
 			ChangeControlAction, ETriggerEvent::Started, this, &AABCharacterPlayer::ChangeCharacterControl
+		);
+
+		EnhancedInputComponent->BindAction(
+			AttackAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Attack
 		);
 	}
 }
@@ -278,4 +291,29 @@ void AABCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 	// 컨트롤러를 회전 시키면 스프링 암 컴포넌트가 회전함
 	AddControllerYawInput(RotationValue.X);
 	AddControllerPitchInput(-RotationValue.Y);
+}
+
+void AABCharacterPlayer::Attack()
+{
+	// 몽타주 재생
+	// 애님 인스턴스 가져오기
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		// 몽타주 재생 속도
+		const float AttackSpeedRate = 1.0f;
+
+		// 몽타주 재생
+		AnimInstance->Montage_Play(ComboAttackMontage);
+		
+		// 몽타주 종료 이벤트에 등록할 델리게이트 설정.
+		FOnMontageEnded OnMontageEnded;
+		OnMontageEnded.BindUObject(this, &AABCharacterPlayer::ComboActionEnd);
+		
+		// 몽타주 재생 종료 시 발행되는 이벤트에 등록.
+		AnimInstance->Montage_SetEndDelegate(OnMontageEnded, ComboAttackMontage);
+		
+		// 몽타주 재생시 이동 안하도록 설정
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+	}
 }
