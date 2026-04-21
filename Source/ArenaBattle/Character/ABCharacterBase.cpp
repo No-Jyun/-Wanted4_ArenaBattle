@@ -8,7 +8,7 @@
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// 맵 설정.
@@ -39,22 +39,41 @@ void AABCharacterBase::SetCharacterContolData(
 	const UABCharacterControlData* InCharacterControlData)
 {
 	// Pawn.
-	bUseControllerRotationYaw 
+	bUseControllerRotationYaw
 		= InCharacterControlData->bUseControllerRotationYaw;
 
 	// CharacterMovement.
 	GetCharacterMovement()->bUseControllerDesiredRotation
 		= InCharacterControlData->bUseControllerDesiredRotation;
 
-	GetCharacterMovement()->bOrientRotationToMovement 
+	GetCharacterMovement()->bOrientRotationToMovement
 		= InCharacterControlData->bOrientRotationToMovement;
 
-	GetCharacterMovement()->RotationRate 
+	GetCharacterMovement()->RotationRate
 		= InCharacterControlData->RotationRate;
 }
 
 void AABCharacterBase::ProcessComboCommand()
 {
+	// 처음 공격 시작할 때 처리.
+	if (CurrentCombo == 0)
+	{
+		ComboActionBegin();
+		return;
+	}
+
+	// 공격이 이미 진행 중일 때 처리.
+	// 타이머 핸들의 유효 여부에 따라 분기 처리.
+	if (ComboTimerHandle.IsValid())
+	{
+		// 입력이 제대로 들어온 경우.
+		bHasNextComboCommand = true;
+	}
+	else
+	{
+		// 입력이 제대로 들어오지 않은 경우.
+		bHasNextComboCommand = false;
+	}
 }
 
 void AABCharacterBase::ComboActionBegin()
@@ -95,6 +114,12 @@ void AABCharacterBase::ComboActionBegin()
 void AABCharacterBase::ComboActionEnd(
 	UAnimMontage* TargetMontage, bool bInterrupted)
 {
+	// 값 확인 (어서트).
+	ensureAlways(CurrentCombo > 0);
+
+	// 콤보 단계 초기화.
+	CurrentCombo = 0;
+
 	// 몽타주 재생이 종료되면 캐릭터 이동을 다시 원상 복구.
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
@@ -109,9 +134,67 @@ void AABCharacterBase::SetComboCheckTimer()
 		ComboActionData->EffectiveFrameCount.IsValidIndex(ComboIndex)
 	);
 
+	// 애니메이션 재생 속도도 고려(배속).
+	const float AttackSpeedRate = 1.0f;
 
+	// 타이머 설정에 사용할 시간 값.
+	// 콤보 액션 데이터에는 프레임 값이 설정되어 있음.
+	// 프레임(애니메이션) -> 초단위로 변환이 필요함.
+	// 대략 17/30 -> 0.56666초.
+	float ComboEffectTime = (ComboActionData->EffectiveFrameCount[ComboIndex]
+		/ ComboActionData->FrameRate) / AttackSpeedRate;
+
+	// 타이머 설정.
+	if (ComboEffectTime > 0)
+	{
+		// 시간은 월드가 관리.
+		GetWorld()->GetTimerManager().SetTimer(
+			ComboTimerHandle,
+			this,
+			&AABCharacterBase::ComboCheck,
+			ComboEffectTime,
+			false
+		);
+	}
 }
 
 void AABCharacterBase::ComboCheck()
 {
+	// 타이머 재사용을 위해 타이머 핸들 초기화.
+	ComboTimerHandle.Invalidate();
+
+	// 콤보 타이머 전에 공격 입력이 들어왔는지 확인.
+	if (bHasNextComboCommand)
+	{
+		// 몽타주 섹션 점프.
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			// 다음 콤보 단계 설정.
+			CurrentCombo = FMath::Clamp(
+				CurrentCombo + 1,
+				1,
+				ComboActionData->MaxComboCount
+			);
+
+			// 점프할 섹션 이름 구성.
+			FName NextSection = *FString::Printf(
+				TEXT("%s%d"),
+				*ComboActionData->MontageSectionNamePrefix,
+				CurrentCombo
+			);
+
+			// 몽타주 섹션 점프.
+			AnimInstance->Montage_JumpToSection(
+				NextSection, 
+				ComboAttackMontage
+			);
+
+			// 타이머 재설정.
+			SetComboCheckTimer();
+
+			// 콤보 처리에 사용한 값 초기화.
+			bHasNextComboCommand = false;
+		}
+	}
 }

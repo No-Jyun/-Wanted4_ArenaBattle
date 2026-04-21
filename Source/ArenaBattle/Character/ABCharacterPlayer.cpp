@@ -339,5 +339,5 @@ void AABCharacterPlayer::QuarterMove(const FInputActionValue& Value)
 
 void AABCharacterPlayer::Attack()
 {
-	
+	ProcessComboCommand();
 }
