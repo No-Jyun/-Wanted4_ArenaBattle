@@ -8,14 +8,14 @@ public class ArenaBattle : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		// Include¿¡¼­ °Ë»öÇÒ °æ·Î ÁöÁ¤.
-		// »ó´ë °æ·Î·Î Include Ã³¸®µµ °¡´ÉÇÏÁö¸¸, ÁöÁ¤ÇØµÎ¸é ÆíÇÔ.
+		// Includeï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+		// ï¿½ï¿½ï¿½ ï¿½ï¿½Î·ï¿½ Include Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ØµÎ¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		PublicIncludePaths.AddRange(new string[] 
 		{
             "ArenaBattle"
         });
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
