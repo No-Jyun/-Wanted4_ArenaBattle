@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/ABAnimationAttackInterface.h"
+#include "Interface/ABCharacterWidgetInterface.h"
 #include "ABCharacterBase.generated.h"
 
 // 캐릭터 컨트롤 타입 (입력 방식을 설정하기 위함).
@@ -23,7 +24,7 @@ enum class ECharacterControlType : uint8
 // -> 순수 가상 함수를 가진 클래스는 그 자체로는 인스턴스를 생성할 수 없음
 // -> 로우 레벨 기준에서 왜 안될까??? 링커 - 선언은 있지만 정의가 없어서 오류 날듯
 UCLASS()
-class ARENABATTLE_API AABCharacterBase : public ACharacter, public IABAnimationAttackInterface
+class ARENABATTLE_API AABCharacterBase : public ACharacter, public IABAnimationAttackInterface, public IABCharacterWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +41,12 @@ public:
 		struct FDamageEvent const& DamageEvent, 
 		class AController* EventInstigator, 
 		AActor* DamageCauser) override;
+	
+	// Inherited via IABCharacterWidgetInterface
+	virtual void SetupCharacterWidget(class UABUserWidget* InUserWidget) override;
+	
+	// 모든 컴포넌트
+	virtual void PostInitializeComponents() override;
 	
 protected:
 	// 죽음 설정 함수
@@ -105,4 +112,12 @@ protected:
 
 	// 죽은 후 대기할 시간 값 (단위 : 초)
 	float DeadEventDelayTime = 5.0f;
+	
+protected:
+	// 스탯 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+	TObjectPtr<class UABCharacterStatComponent> Stat;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Widget")
+	TObjectPtr<class UABWidgetComponent> HpBar;
 };
