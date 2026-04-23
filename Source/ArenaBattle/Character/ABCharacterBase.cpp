@@ -12,6 +12,8 @@
 #include "UI/ABHpBarWidget.h"
 #include "UI/ABWidgetComponent.h"
 
+#include "Item/ABItemData.h"
+
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -126,6 +128,11 @@ AABCharacterBase::AABCharacterBase()
 		// 콜리전 끄기
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+	
+	// 아이템 액션 설정
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::EquipWeapon));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::DrinkPotion));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::ReadScroll));
 }
 
 void AABCharacterBase::AttackHitCheck()
@@ -428,4 +435,30 @@ void AABCharacterBase::ComboCheck()
 			bHasNextComboCommand = false;
 		}
 	}
+}
+
+void AABCharacterBase::TakeItem(class UABItemData* InItemData)
+{
+	// 아이템 정보가 넘어왔으면 처리
+	if (InItemData)
+	{
+		// 아이템 종류에 맞게 바인딩 (연결) 된 함수 호출
+		// 0 : Weapon, 1 : Potion, 2 : Scroll (열거형 순서에 맞게 저장)
+		TakeItemActions[(uint8)InItemData->Type].ExecuteIfBound(InItemData);
+	}
+}
+
+void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("DrinkPotion"));
+}
+
+void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("EquipWeapon"));
+}
+
+void AABCharacterBase::ReadScroll(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
 }

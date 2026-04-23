@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Interface/ABAnimationAttackInterface.h"
 #include "Interface/ABCharacterWidgetInterface.h"
+#include "Interface/ABCharacterItemInterface.h"
 #include "ABCharacterBase.generated.h"
 
 // 캐릭터 컨트롤 타입 (입력 방식을 설정하기 위함).
@@ -16,6 +17,9 @@ enum class ECharacterControlType : uint8
 	Quarter
 };
 
+// 아이템 획득 처리를 위한 델리게이트 선언 
+DECLARE_DELEGATE_OneParam(FOnTakeItemDelegate, class UABItemData* /*InItemData*/)
+
 // 다중 상속 : 여러 부모를 상속하는 형태
 // -> 쓰지 마시라
 // -> 따라서 조건부로 잘 사용해야 함
@@ -24,7 +28,11 @@ enum class ECharacterControlType : uint8
 // -> 순수 가상 함수를 가진 클래스는 그 자체로는 인스턴스를 생성할 수 없음
 // -> 로우 레벨 기준에서 왜 안될까??? 링커 - 선언은 있지만 정의가 없어서 오류 날듯
 UCLASS()
-class ARENABATTLE_API AABCharacterBase : public ACharacter, public IABAnimationAttackInterface, public IABCharacterWidgetInterface
+class ARENABATTLE_API AABCharacterBase 
+	: public ACharacter, 
+	public IABAnimationAttackInterface, 
+	public IABCharacterWidgetInterface,
+	public IABCharacterItemInterface
 {
 	GENERATED_BODY()
 
@@ -78,6 +86,17 @@ protected:
 	// 콤보 체크 처리 함수.
 	// 타이머를 종료하고, 유효 시간 내에 다음 입력이 들어왔는지 확인하여 처리.
 	void ComboCheck();
+	
+	// 아이템 습득시 호출될 함수 (인터페이스를 통해)
+	virtual void TakeItem(class UABItemData* InItemData) override;
+
+	// 아이템 종류마다 처리될 함수
+	virtual void DrinkPotion(UABItemData* InItemData);
+	virtual void EquipWeapon(UABItemData* InItemData);
+	virtual void ReadScroll(UABItemData* InItemData);
+	
+	// 아이템 처리를 위한 델리게이트 관리 배열
+	TArray<FOnTakeItemDelegate> TakeItemActions;
 
 protected:
 	// 컨트롤 타입에 따른 컨트롤 데이터를 관리하는 맵.
