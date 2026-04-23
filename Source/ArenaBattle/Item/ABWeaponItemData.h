@@ -15,6 +15,8 @@ class ARENABATTLE_API UABWeaponItemData : public UABItemData
 	GENERATED_BODY()
 	
 public:
+	// 약한 참조 (Soft-Referencing) - 경로 값을 기반으로 필요할 때 로드해서 사용
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMesh> WeaponMesh;
+	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
+	//TObjectPtr<USkeletalMesh> WeaponMesh;
 };

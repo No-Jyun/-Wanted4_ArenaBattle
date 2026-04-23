@@ -13,6 +13,7 @@
 #include "UI/ABWidgetComponent.h"
 
 #include "Item/ABItemData.h"
+#include "Item/ABWeaponItemData.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -133,6 +134,11 @@ AABCharacterBase::AABCharacterBase()
 	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::EquipWeapon));
 	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::DrinkPotion));
 	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::ReadScroll));
+	
+	// Weapon 컴포넌트
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	// 계층 설정
+	Weapon->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 }
 
 void AABCharacterBase::AttackHitCheck()
@@ -455,7 +461,22 @@ void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
 
 void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipWeapon"));
+	// 무기 아이템으로 형변환 후 아이템 획득 처리
+	UABWeaponItemData* WeaponItemData = Cast<UABWeaponItemData>(InItemData);
+	if (WeaponItemData)
+	{
+		// 무기 컴포넌트에 메시 설정
+		//Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh);
+		
+		// 무기 애셋 로드
+		// 무기 애셋이 로드됐는지 확인해보고 안됐으면 로딩
+		if (WeaponItemData->WeaponMesh.IsPending())
+		{
+			// 동기 방식으로 메시 애셋 로드
+			WeaponItemData->WeaponMesh.LoadSynchronous();
+		}
+		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
+	}
 }
 
 void AABCharacterBase::ReadScroll(UABItemData* InItemData)
