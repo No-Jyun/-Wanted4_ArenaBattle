@@ -127,7 +127,7 @@ protected:
 	// 아이템 상자는 스테이지 액터와는 무관
 	// 따라서 강참조 보다는 약참조가 적절
 	UPROPERTY(VisibleAnywhere, Category = "Reward")
-	TArray<TObjectPtr<class AABItemBox>> RewardBoxes;
+	TArray<TWeakObjectPtr<class AABItemBox>> RewardBoxes;
 	
 	// 아이템 상자 생성 위치 (맵으로 관리)
 	TMap<FName, FVector> RewardBoxLocations;

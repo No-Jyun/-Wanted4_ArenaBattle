@@ -24,6 +24,12 @@ class ARENABATTLE_API UABItemData : public UPrimaryDataAsset
 	GENERATED_BODY()
 	
 public:
+	// FPrimaryAssetId를 반환하는 함수
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId("ABItemData", GetFName());
+	}
+	
 	// 아이템 타입
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EItemType Type;
