@@ -476,6 +476,9 @@ void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
 			WeaponItemData->WeaponMesh.LoadSynchronous();
 		}
 		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
+		
+		// 무기 아이템 데이터가 가지는 부가 스탯 설정
+		Stat->SetModifierStat(WeaponItemData->ModifierStat);
 	}
 }
 

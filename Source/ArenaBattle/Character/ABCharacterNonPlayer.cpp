@@ -2,10 +2,55 @@
 
 
 #include "Character/ABCharacterNonPlayer.h"
+#include "Engine/AssetManager.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
+	// 시작할 때는 메시 안 보이게 설정
+	GetMesh()->SetHiddenInGame(true);
+}
 
+void AABCharacterNonPlayer::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	// 예외 처리
+	ensureAlways(NPCMeshes.Num() > 0);
+	
+	// 랜덤으로 인덱스 선택
+	int32 RandIndex = FMath::RandRange(0, NPCMeshes.Num() - 1);
+	
+	// 비동기 방식으로 애셋 로딩
+	NPCMeshHandle =	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
+		NPCMeshes[RandIndex],
+		FStreamableDelegate::CreateUObject(
+			this,
+			&AABCharacterNonPlayer::NPCMeshLoadCompleted
+		)
+	);
+}
+
+void AABCharacterNonPlayer::NPCMeshLoadCompleted()
+{
+	// 로드가 완료되어 핸들이 유효한지 확인
+	if (NPCMeshHandle.IsValid())
+	{
+		// 로드된 애셋을 스켈레탈 메시로 변환
+		USkeletalMesh* NPCMesh = Cast<USkeletalMesh>(NPCMeshHandle->GetLoadedAsset());
+		
+		// 메시 애셋 설정
+		if (NPCMesh)
+		{
+			// 스켈레탈 메시 애셋 설정
+			GetMesh()->SetSkeletalMesh(NPCMesh);
+			
+			// 메시 컴포넌트가 화면에 보이도록 설정
+			GetMesh()->SetHiddenInGame(false);
+		}
+	}
+	
+	// 애셋 로드에 사용했던 핸들 해제
+	NPCMeshHandle->ReleaseHandle();
 }
 
 void AABCharacterNonPlayer::SetDead()

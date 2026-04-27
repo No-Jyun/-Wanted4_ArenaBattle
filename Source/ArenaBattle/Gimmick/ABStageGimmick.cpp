@@ -190,13 +190,19 @@ void AABStageGimmick::OnGateTriggerBeginOverlap(
 		return;
 	}
 
+	// 생성 트랜스폼
+	const FTransform SpawnTransform(NewLocation);
+	
 	// 충돌이 안됐으면 (비어 있으면) 스테이지 액터 생성
-	AABStageGimmick* NewGimmick = 
-		GetWorld()->SpawnActor<AABStageGimmick>(NewLocation, FRotator::ZeroRotator);
+	AABStageGimmick* NewGimmick =
+		GetWorld()->SpawnActorDeferred<AABStageGimmick>(AABStageGimmick::StaticClass(), SpawnTransform);
 	if (NewGimmick)
 	{
 		// 새로 생성된 스테이지의 레벨 + 1
 		NewGimmick->SetStageNum(CurrentStageNum + 1);
+		
+		// 생성 처리 완료
+		NewGimmick->FinishSpawning(SpawnTransform);
 	}
 }
 
@@ -261,11 +267,11 @@ void AABStageGimmick::SetFight()
 	// 대전 상대 생성
 	// 타이머 활용
 	GetWorld()->GetTimerManager().SetTimer(
-		OpponentSpawnTimerHandle,		// 타이머 핸들
-		this,								// 구독할 함수를 소유하는 객체 (인스턴스)
-		&AABStageGimmick::OnOpponentSpawn,	// 등록할 함수 (주소)
-		OpponentSpawnTime,					// 타이머 시간
-		false								// 반복 여부
+		OpponentSpawnTimerHandle, // 타이머 핸들
+		this, // 구독할 함수를 소유하는 객체 (인스턴스)
+		&AABStageGimmick::OnOpponentSpawn, // 등록할 함수 (주소)
+		OpponentSpawnTime, // 타이머 시간
+		false // 반복 여부
 	);
 }
 
@@ -315,9 +321,9 @@ void AABStageGimmick::OnOpponentSpawn()
 	const FVector SpawnLocation = GetActorLocation() + FVector::UpVector * 80.0f;
 
 	const FTransform SpawnTransform(SpawnLocation);
-	
+
 	// NPC 생성
-	AABCharacterNonPlayer* ABOpponentCharacter = 
+	AABCharacterNonPlayer* ABOpponentCharacter =
 		GetWorld()->SpawnActorDeferred<AABCharacterNonPlayer>(OpponentClass, SpawnTransform);
 
 	// 예외처리
@@ -331,19 +337,19 @@ void AABStageGimmick::OnOpponentSpawn()
 
 	// NPC가 죽었을 때 발행되는 이벤트에 함수 등록
 	ABOpponentCharacter->OnDestroyed.AddDynamic(this, &AABStageGimmick::OnOpponentDestroyed);
-	
+
 	// 현재 스테이지 순번을 NPC 레벨로 설정
 	ABOpponentCharacter->SetLevel(CurrentStageNum);
-	
+
 	// 초기화 작업을 완료했으면 처리 완료했다고 전달
 	ABOpponentCharacter->FinishSpawning(SpawnTransform);
 }
 
 void AABStageGimmick::OnRewardTriggerBeginOverlap(
-	UPrimitiveComponent* OverlappedComponent, 
+	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, 
-	int32 OtherBodyIndex, 
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
@@ -355,10 +361,10 @@ void AABStageGimmick::OnRewardTriggerBeginOverlap(
 		{
 			// 포인터 가져오기
 			AABItemBox* ValidItemBox = RewardBox.Get();
-			
+
 			// 부딪힌 아이템 상자 검출
 			AActor* OverlappedActor = OverlappedComponent->GetOwner();
-			
+
 			// 부딪히지 않은 상자는 제거
 			if (OverlappedActor != ValidItemBox)
 			{
@@ -366,7 +372,7 @@ void AABStageGimmick::OnRewardTriggerBeginOverlap(
 			}
 		}
 	}
-	
+
 	// Next 단계로 이동
 	SetState(EStageState::Next);
 }
@@ -377,24 +383,28 @@ void AABStageGimmick::SpawnRewardBoxes()
 	for (const auto& RewardBoxLocation : RewardBoxLocations)
 	{
 		// 상자 위치
-		FVector WorldSpawnLocation = GetActorLocation() + RewardBoxLocation.Value + FVector(0.0f, 0.0f, 30.0f);
-		AActor* ItemActor = GetWorld()->SpawnActor(RewardBoxClass, &WorldSpawnLocation, &FRotator::ZeroRotator);
+		FVector WorldSpawnLocation =
+			GetActorLocation() + RewardBoxLocation.Value + FVector(0.0f, 0.0f, 30.0f);
+		const FTransform SpawnTransform(WorldSpawnLocation);
 
-		// 아이템 상자로 형변환
-		AABItemBox* RewardBox = Cast<AABItemBox>(ItemActor);
+		// 상자 생성
+		AABItemBox* RewardBoxActor = GetWorld()->SpawnActorDeferred<AABItemBox>(RewardBoxClass, SpawnTransform);
 
-		if (RewardBox)
+		if (RewardBoxActor)
 		{
 			// 상자에 태그 추가
 			// 나중에 어느 상자와 부딪혔는지 알기 위해
-			RewardBox->Tags.Add(RewardBoxLocation.Key);
+			RewardBoxActor->Tags.Add(RewardBoxLocation.Key);
 
 			// 박스가 Destroy 될 때 발행되는 이벤트에 등록
-			RewardBox->GetTrigger()->OnComponentBeginOverlap.AddDynamic(
+			RewardBoxActor->GetTrigger()->OnComponentBeginOverlap.AddDynamic(
 				this, &AABStageGimmick::OnRewardTriggerBeginOverlap);
-			
+
 			// 생성된 박스를 배열에 추가
-			RewardBoxes.Add(RewardBox);
+			RewardBoxes.Add(RewardBoxActor);
+			
+			// 생성 완료 처리
+			RewardBoxActor->FinishSpawning(SpawnTransform);
 		}
 	}
 }
