@@ -3,11 +3,19 @@
 
 #include "Character/ABCharacterNonPlayer.h"
 #include "Engine/AssetManager.h"
+#include "AI/ABAIController.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
 	// 시작할 때는 메시 안 보이게 설정
 	GetMesh()->SetHiddenInGame(true);
+
+	// AIController 클래스 설정
+	AIControllerClass = AABAIController::StaticClass();
+	
+	// 맵에서 로드 또는 런타임에 스폰(생성)되는 모든 경우
+	// 미리 지정한 AIController에 빙의되도록 설정
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AABCharacterNonPlayer::PostInitializeComponents()
