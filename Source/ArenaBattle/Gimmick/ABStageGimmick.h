@@ -29,6 +29,10 @@ public:
 	// Sets default values for this actor's properties
 	AABStageGimmick();
 
+	// Getter / Setter
+	FORCEINLINE int32 GetStageNum() const { return CurrentStageNum; }
+	FORCEINLINE void SetStageNum(int32 InNewStageNum) { CurrentStageNum = InNewStageNum; }
+
 protected:
 	// 이 함수는 트랜스폼 변경 뿐 아니라, 다른 속성이 변경되더라도 호출됨
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -122,16 +126,16 @@ protected:
 	// 보상용 아이템 상자 클래스
 	UPROPERTY(VisibleAnywhere, Category = "Reward")
 	TSubclassOf<class AABItemBox> RewardBoxClass;
-	
+
 	// 생성된 아이템 박스를 저장할 배열 변수
 	// 아이템 상자는 스테이지 액터와는 무관
 	// 따라서 강참조 보다는 약참조가 적절
 	UPROPERTY(VisibleAnywhere, Category = "Reward")
 	TArray<TWeakObjectPtr<class AABItemBox>> RewardBoxes;
-	
+
 	// 아이템 상자 생성 위치 (맵으로 관리)
 	TMap<FName, FVector> RewardBoxLocations;
-	
+
 	// 생성된 상자에 오버랩 이벤트가 발생하면 호출할 함수
 	UFUNCTION()
 	void OnRewardTriggerBeginOverlap(
@@ -142,7 +146,13 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
-	
+
 	// 아이템 상자 생성 함수
 	void SpawnRewardBoxes();
+
+	// Stage Stat
+protected:
+	// 스테이지 생성 순번을 스탯으로 관리
+	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
+	int32 CurrentStageNum;
 };

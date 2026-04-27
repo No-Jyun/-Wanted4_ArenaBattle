@@ -144,7 +144,7 @@ AABCharacterBase::AABCharacterBase()
 void AABCharacterBase::AttackHitCheck()
 {
 	// 공격 범위
-	const float AttackRange = 300.0f;
+	const float AttackRange = Stat->GetTotalStat().AttackRange;
 
 	// 트레이스에 사용할 구체의 반지름
 	const float AttackRadius = 50.0f;
@@ -177,7 +177,7 @@ void AABCharacterBase::AttackHitCheck()
 	if (HitDetected)
 	{
 		// 전달할 대미지 양
-		const float AttackDamage = 100.0f;
+		const float AttackDamage = Stat->GetTotalStat().Attack;
 
 		// 대미지 이벤트 변수
 		FDamageEvent DamageEvent;
@@ -233,7 +233,7 @@ void AABCharacterBase::SetupCharacterWidget(class UABUserWidget* InUserWidget)
 	if (HpBarWidget)
 	{
 		// 체력 관련 값 설정
-		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
+		HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
 		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
 		
 		// 델리게이트 등록
@@ -331,7 +331,7 @@ void AABCharacterBase::ComboActionBegin()
 	if (AnimInstance)
 	{
 		// 몽타주 재생 속도.
-		const float AttackSpeedRate = 1.0f;
+		const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
 
 		// 몽타주 재생.
 		AnimInstance->Montage_Play(ComboAttackMontage, AttackSpeedRate);
@@ -379,7 +379,7 @@ void AABCharacterBase::SetComboCheckTimer()
 	);
 
 	// 애니메이션 재생 속도를 고려(적용).
-	const float AttackSpeedRate = 1.0f;
+	const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
 
 	// 타이머 설정에 사용할 시간 값.
 	// 콤보 액션 데이터에서 프레임 수로 저장되어 있음.
@@ -482,4 +482,14 @@ void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
 void AABCharacterBase::ReadScroll(UABItemData* InItemData)
 {
 	UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
+}
+
+int32 AABCharacterBase::GetLevel() const
+{
+	return Stat->GetCurrentLevel();
+}
+
+void AABCharacterBase::SetLevel(int32 InNewLevel)
+{
+	Stat->SetLevelStat(InNewLevel);
 }

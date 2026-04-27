@@ -191,7 +191,13 @@ void AABStageGimmick::OnGateTriggerBeginOverlap(
 	}
 
 	// 충돌이 안됐으면 (비어 있으면) 스테이지 액터 생성
-	GetWorld()->SpawnActor<AABStageGimmick>(NewLocation, FRotator::ZeroRotator);
+	AABStageGimmick* NewGimmick = 
+		GetWorld()->SpawnActor<AABStageGimmick>(NewLocation, FRotator::ZeroRotator);
+	if (NewGimmick)
+	{
+		// 새로 생성된 스테이지의 레벨 + 1
+		NewGimmick->SetStageNum(CurrentStageNum + 1);
+	}
 }
 
 void AABStageGimmick::OpenAllGates()
@@ -255,11 +261,11 @@ void AABStageGimmick::SetFight()
 	// 대전 상대 생성
 	// 타이머 활용
 	GetWorld()->GetTimerManager().SetTimer(
-		OpponentSpawnTimerHandle, // 타이머 핸들
-		this, // 구독할 함수를 소유하는 객체 (인스턴스)
-		&AABStageGimmick::OnOpponentSpawn, // 등록할 함수 (주소)
-		OpponentSpawnTime, // 타이머 시간
-		false // 반복 여부
+		OpponentSpawnTimerHandle,		// 타이머 핸들
+		this,								// 구독할 함수를 소유하는 객체 (인스턴스)
+		&AABStageGimmick::OnOpponentSpawn,	// 등록할 함수 (주소)
+		OpponentSpawnTime,					// 타이머 시간
+		false								// 반복 여부
 	);
 }
 
@@ -308,22 +314,29 @@ void AABStageGimmick::OnOpponentSpawn()
 	// 특정 위치를 지정해서 사용
 	const FVector SpawnLocation = GetActorLocation() + FVector::UpVector * 80.0f;
 
+	const FTransform SpawnTransform(SpawnLocation);
+	
 	// NPC 생성
-	AActor* OpponentActor = GetWorld()->SpawnActor(OpponentClass, &SpawnLocation, &FRotator::ZeroRotator);
+	AABCharacterNonPlayer* ABOpponentCharacter = 
+		GetWorld()->SpawnActorDeferred<AABCharacterNonPlayer>(OpponentClass, SpawnTransform);
 
-	// 예외처리 (생성한 액터가 우리가 의도한 타입인지 확인)
-	AABCharacterNonPlayer* ABOpponentCharacter = Cast<AABCharacterNonPlayer>(OpponentActor);
-	// 형변환에 실패하면 의도한 타입이 아니기 때문에 종료
+	// 예외처리
 	if (!ABOpponentCharacter)
 	{
 		// 선택사항
 		// 발생하면 안되는 문제
-		OpponentActor->Destroy();
+		ABOpponentCharacter->Destroy();
 		return;
 	}
 
 	// NPC가 죽었을 때 발행되는 이벤트에 함수 등록
-	OpponentActor->OnDestroyed.AddDynamic(this, &AABStageGimmick::OnOpponentDestroyed);
+	ABOpponentCharacter->OnDestroyed.AddDynamic(this, &AABStageGimmick::OnOpponentDestroyed);
+	
+	// 현재 스테이지 순번을 NPC 레벨로 설정
+	ABOpponentCharacter->SetLevel(CurrentStageNum);
+	
+	// 초기화 작업을 완료했으면 처리 완료했다고 전달
+	ABOpponentCharacter->FinishSpawning(SpawnTransform);
 }
 
 void AABStageGimmick::OnRewardTriggerBeginOverlap(

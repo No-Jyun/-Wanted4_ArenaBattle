@@ -22,7 +22,7 @@ public:
 	}
 
 	// 두 구조체를 더하는 연산자 오버로딩
-	FABCharacterStat operator+(const FABCharacterStat& Other)
+	FABCharacterStat operator+(const FABCharacterStat& Other) const
 	{
 		// 포인터 연산을 활용한 덧셈 처리
 		// 모든 속성의 크기가 같아야함

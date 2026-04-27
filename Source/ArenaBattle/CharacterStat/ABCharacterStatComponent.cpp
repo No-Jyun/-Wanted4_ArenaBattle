@@ -2,6 +2,7 @@
 
 
 #include "CharacterStat/ABCharacterStatComponent.h"
+#include "GameData/ABGameSingleton.h"
 
 // Sets default values for this component's properties
 UABCharacterStatComponent::UABCharacterStatComponent()
@@ -10,8 +11,10 @@ UABCharacterStatComponent::UABCharacterStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	MaxHp = 200.0f;
-	CurrentHp = MaxHp;
+	//MaxHp = 200.0f;
+	//CurrentHp = MaxHp;
+	// 현재 레벨 설정
+	CurrentLevel = 1;
 }
 
 
@@ -21,16 +24,33 @@ void UABCharacterStatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 게임이 시작되면 최대 체력에서 시작하도록 설정
-	SetHp(MaxHp);
+	//SetHp(MaxHp);
+	
+	// 시작할 때 현재 레벨에 맞는 스탯 데이터 설정
+	SetLevelStat(CurrentLevel);
+	SetHp(BaseStat.MaxHp);
 }
 
 void UABCharacterStatComponent::SetHp(float NewHp)
 {
 	// 현재 체력 값 갱신
-	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
+	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, BaseStat.MaxHp);
 	
 	// 체력 변경 이벤트 발행
 	OnHpChanged.Broadcast(CurrentHp);
+}
+
+void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
+{
+	// 게임 싱글톤의 값을 사용해 현재 레벨 고정
+	// 새로 설정할 레벨의 값이 최대 레벨을 벗어나지 않도록
+	CurrentLevel = FMath::Clamp(InNewLevel, 1, UABGameSingleton::Get().CharacterMaxLevel);
+	
+	// 스탯 데이터 설정
+	BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	
+	// 확인
+	ensureAlways(BaseStat.MaxHp > 0.0f);
 }
 
 float UABCharacterStatComponent::ApplyDamage(float InDamage)
@@ -39,7 +59,7 @@ float UABCharacterStatComponent::ApplyDamage(float InDamage)
 	// 변경 여부를 확인하기 위해 대미지 처리 전 값 저장
 	const float PrevHp = CurrentHp;
 	// 대미지 값 가져오기
-	const float ActualDamage = FMath::Clamp<float>(InDamage, 0.0f, MaxHp);
+	const float ActualDamage = FMath::Clamp<float>(InDamage, 0.0f, GetTotalStat().MaxHp);
 	
 	// 대미지 처리
 	SetHp(PrevHp - ActualDamage);
