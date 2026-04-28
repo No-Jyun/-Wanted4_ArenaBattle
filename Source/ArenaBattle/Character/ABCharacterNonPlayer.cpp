@@ -4,6 +4,7 @@
 #include "Character/ABCharacterNonPlayer.h"
 #include "Engine/AssetManager.h"
 #include "AI/ABAIController.h"
+#include "CharacterStat/ABCharacterStatComponent.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
@@ -12,7 +13,7 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 
 	// AIController 클래스 설정
 	AIControllerClass = AABAIController::StaticClass();
-	
+
 	// 맵에서 로드 또는 런타임에 스폰(생성)되는 모든 경우
 	// 미리 지정한 AIController에 빙의되도록 설정
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -21,15 +22,15 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 void AABCharacterNonPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
+
 	// 예외 처리
 	ensureAlways(NPCMeshes.Num() > 0);
-	
+
 	// 랜덤으로 인덱스 선택
 	int32 RandIndex = FMath::RandRange(0, NPCMeshes.Num() - 1);
-	
+
 	// 비동기 방식으로 애셋 로딩
-	NPCMeshHandle =	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
+	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
 		NPCMeshes[RandIndex],
 		FStreamableDelegate::CreateUObject(
 			this,
@@ -45,18 +46,18 @@ void AABCharacterNonPlayer::NPCMeshLoadCompleted()
 	{
 		// 로드된 애셋을 스켈레탈 메시로 변환
 		USkeletalMesh* NPCMesh = Cast<USkeletalMesh>(NPCMeshHandle->GetLoadedAsset());
-		
+
 		// 메시 애셋 설정
 		if (NPCMesh)
 		{
 			// 스켈레탈 메시 애셋 설정
 			GetMesh()->SetSkeletalMesh(NPCMesh);
-			
+
 			// 메시 컴포넌트가 화면에 보이도록 설정
 			GetMesh()->SetHiddenInGame(false);
 		}
 	}
-	
+
 	// 애셋 로드에 사용했던 핸들 해제
 	NPCMeshHandle->ReleaseHandle();
 }
@@ -75,7 +76,7 @@ void AABCharacterNonPlayer::SetDead()
 	// { } 본분
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
-		TimerHandle, 
+		TimerHandle,
 		FTimerDelegate::CreateLambda(
 			[&]()
 			{
@@ -99,10 +100,37 @@ float AABCharacterNonPlayer::GetAIDetectRange()
 
 float AABCharacterNonPlayer::GetAIAttackRange()
 {
-	return 0.0f;
+	// 공격 거리
+	// 캡슐 형태 = 공격 거리 + (공격 반경 X 2)
+	return (Stat->GetAttackRadius() * 2) + Stat->GetTotalStat().AttackRange;
 }
 
 float AABCharacterNonPlayer::GetAITurnSpeed()
 {
 	return 0.0f;
+}
+
+void AABCharacterNonPlayer::AttackByAI()
+{
+	// 공격 재생
+	ProcessComboCommand();
+	
+	// 공격 끝난 후 처리
+	// 아직 공격 언제 끝났는지 모름
+	
+}
+
+void AABCharacterNonPlayer::SetAIAttackDelegate(
+	const FAICharacterAttackFinished& InOnAttackFinished)
+{
+	// 델리게이트를 변수에 저장
+	OnAttackFinished = InOnAttackFinished;
+}
+
+void AABCharacterNonPlayer::NotifyComboActionEnd()
+{
+	Super::NotifyComboActionEnd();
+	
+	// 앞서 전달받은 델리게이트 실행
+	OnAttackFinished.ExecuteIfBound();
 }
