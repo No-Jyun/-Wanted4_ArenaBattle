@@ -6,6 +6,9 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
+#include "ABAI.h"
 
 AABAIController::AABAIController()
 {
@@ -39,6 +42,9 @@ void AABAIController::RunAI()
 	// 두 번째 파라미터가 *& 타입이어서 명시적인 변수가 있어야함
 	if (UseBlackboard(BBAsset, BlackBoardPtr))
 	{
+		// 폰의 위치를 블랙보드에 저장
+		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
+		
 		// 비헤이비어 트리 실행
 		bool Result = RunBehaviorTree(BTAsset);
 		
