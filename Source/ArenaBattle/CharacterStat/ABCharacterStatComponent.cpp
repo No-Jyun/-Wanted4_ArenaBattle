@@ -18,21 +18,31 @@ UABCharacterStatComponent::UABCharacterStatComponent()
 	
 	// 공격 반경 설정
 	AttackRadius = 50.0f;
+	
+	bWantsInitializeComponent = true;
 }
 
-
-// Called when the game starts
-void UABCharacterStatComponent::BeginPlay()
+void UABCharacterStatComponent::InitializeComponent()
 {
-	Super::BeginPlay();
-
-	// 게임이 시작되면 최대 체력에서 시작하도록 설정
-	//SetHp(MaxHp);
+	Super::InitializeComponent();
 	
 	// 시작할 때 현재 레벨에 맞는 스탯 데이터 설정
 	SetLevelStat(CurrentLevel);
 	SetHp(BaseStat.MaxHp);
+
+	
 }
+
+
+// // Called when the game starts
+// void UABCharacterStatComponent::BeginPlay()
+// {
+// 	Super::BeginPlay();
+//
+// 	// 게임이 시작되면 최대 체력에서 시작하도록 설정
+// 	//SetHp(MaxHp);
+// 	
+// }
 
 void UABCharacterStatComponent::SetHp(float NewHp)
 {
@@ -50,7 +60,8 @@ void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
 	CurrentLevel = FMath::Clamp(InNewLevel, 1, UABGameSingleton::Get().CharacterMaxLevel);
 	
 	// 스탯 데이터 설정
-	BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	//BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	SetBaseStat(UABGameSingleton::Get().GetCharacterStat(CurrentLevel));
 	
 	// 확인
 	ensureAlways(BaseStat.MaxHp > 0.0f);

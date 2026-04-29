@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
 #include "InputActionValue.h"
+#include "Interface/ABCharacterHUDInterface.h"
 #include "ABCharacterPlayer.generated.h"
 
 // 전방선언.
@@ -14,10 +15,12 @@ class UInputAction;
  * 
  */
 UCLASS()
-class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
+class ARENABATTLE_API AABCharacterPlayer
+	: public AABCharacterBase,
+	  public IABCharacterHUDInterface
 {
 	GENERATED_BODY()
-	
+
 public:
 	AABCharacterPlayer();
 
@@ -63,7 +66,6 @@ protected:
 
 	// 입력 관련.
 protected:
-
 	//UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	//TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
@@ -88,4 +90,6 @@ protected:
 	// 현재 사용 중이 캐릭터 컨트롤 타입.
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl)
 	ECharacterControlType CurrentCharacterControlType;
+
+	virtual void SetupHUDWidget(class UABHUDWidget* InHUDWidget) override;
 };
